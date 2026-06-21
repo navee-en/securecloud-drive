@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="dashboard">
+
+        <h1>Admin Dashboard</h1>
+
+        <a href="{{ url_for('dashboard') }}"
+            class="btn">
+            User Dashboard
+        </a>
+
+        <hr>
+
+        <div class="stats">
+
+            <div class="card">
+              <h2>{{ total_users }}</h2>
+              <p>Total Users</p>
+            </div>
+
+            <div class="card">
+              <h2>{{ total_files }}</h2>
+              <p>Total Files</p>
+            </div>
+
+            <div class="card">
+              <h2>{{ total_storage }} MB</h2>
+              <p>Storage Used</p>
+            </div>
+
+        </div>
+
+        <form method="GET" action="{{ url_for('admin') }}">
+            <input
+                type="text"
+                name="search_user"
+                placeholder="Search user..."
+                value="{{ request.args.get('search_user', '') }}">
+
+            <button type="submit">
+                Search
+            </button>
+        </form>
+
+        <hr>
+
+        <h2>Users</h2>
+
+        <table>
+
+            <tr>
+               <th>ID</th>
+               <th>Username</th>
+               <th>Email</th>
+               <th>Action</th>
+            </tr>
+
+            {% for user in users %}
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                    <a href="{{ url_for('delete_user',
+                        user_id=user.id) }}"
+                        class="delete-btn"
+                        onclick="return confirm('Delete this user?')">
+
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+        <hr>
+
+        <h2>Files</h2>
+
+        <table>
+
+           <tr>
+               <th>ID</th>
+               <th>File Name</th>
+               <th>User ID</th>
+               <th>Size</th>
+               <th>Action</th>
+            </tr>
+
+            {% for file in files %}
+            <tr>
+               <td>{{ file.id }}</td>
+               <td>{{ file.filename }}</td>
+               <td>{{ file.user_id }}</td>
+               <td>
+                  {{ (file.filesize/1024)|round(2) }} KB
+                </td>
+                <td>
+                    <a href="{{ url_for('admin_delete_file',
+                        file_id=file.id) }}"
+                        class="delete-btn"
+                        onclick="return confirm('Delete this file?')">
+
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+        <hr>
+
+        <h2>Recent Activities</h2>
+
+       <table>
+
+            <tr>
+               <th>User</th>
+               <th>Action</th>
+               <th>Time</th>
+            </tr>
+
+            {% for activity in activities %}
+
+            <tr>
+
+                <td>
+                  {{ activity.user.username }}
+                </td>
+
+                <td>
+                    {{ activity.action }}
+                </td>
+
+                <td>
+                   {{ activity.timestamp }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+        <hr>
+
+        <h2>Storage Usage Per User</h2>
+
+       <table>
+
+            <tr>
+               <th>Username</th>
+               <th>Storage Used</th>
+            </tr>
+
+            {% for item in user_storage %}
+
+            <tr>
+               <td>{{ item.username }}</td>
+               <td>{{ item.storage }} MB</td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+        <br>
+
+        <a href="{{ url_for('dashboard') }}"
+            class="btn">
+
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+    <canvas id="adminChart"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        new Chart(
+        document.getElementById("adminChart"),
+        { 
+            type: "bar",
+            data: {
+                labels: [
+                    "Users",
+                    "Files"
+                ],
+
+               datasets: [{
+                   label: "Statistics",
+                    data: [
+                       {{ total_users }},
+                       {{ total_files }}
+                    ]
+               }]
+            }
+        });
+    </script>
+
+</body>
+</html>
