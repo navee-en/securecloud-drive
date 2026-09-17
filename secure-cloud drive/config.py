@@ -2,7 +2,7 @@ import os
 class Config:
     SECRET_KEY = "your-secret-key"
 
-    SQLALCHEMY_DATABASE_URI = "postgresql://securecloud_user:4jerK2nVM93hOxT6Mf2Q0ZFVxs1BS7or@dpg-d8rr56j6sc1c73blggk0-a.singapore-postgres.render.com/securecloud"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     UPLOAD_FOLDER = "uploads"
